@@ -33,8 +33,8 @@
 - name: Start the app
   shell: |
     export TYPEORM_ENTITIES=./backend/dist/modules/domain/**/*.entity{.ts,.js}
-    export TYPEORM_HOST=localhost
-    export TYPEORM_PORT=5532
+    export TYPEORM_HOST=udapeople-db.c14rdikvngy9.us-west-2.rds.amazonaws.com
+    export TYPEORM_PORT=5432
     export TYPEORM_USERNAME=postgres
     export TYPEORM_PASSWORD=password
     export TYPEORM_DATABASE=glee
