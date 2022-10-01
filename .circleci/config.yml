@@ -315,13 +315,12 @@ jobs:
          fingerprints: ["2e:14:04:b7:8e:cf:3c:e5:bc:f9:02:d7:99:a1:b3:0b"]# Checkout code from git
       - attach_workspace:
          at: ~/
-      # Add ssh keys with fingerprint
-      # attach workspace
+      
       - run:
           name: Install dependencies
           command: |
             cd backend
-            npm install# your code here
+            npm install
       - run:
           name: Package Backend
           command: |
