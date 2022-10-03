@@ -231,12 +231,14 @@ jobs:
       - attach_workspace:
          at: ~/
       - install_ansible
+      - install_awscli
       - run:
          name: Configure Server
          command: |
           cd .circleci/ansible
-          aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
           cat inventory.txt
+          aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
+
           ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
