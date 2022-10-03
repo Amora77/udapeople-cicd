@@ -256,6 +256,9 @@ jobs:
     - run: 
        name: Run migrations
        command: |
+        export TYPEORM_MIGRATIONS_DIR=./src/migrations
+        export TYPEORM_ENTITIES=./src/modules/domain/**/*.entity{.ts,.js}
+        export TYPEORM_MIGRATIONS=./src/migrations/*.ts
         cd backend
         npm install
         npm run migrations > migrations_dump.txt
