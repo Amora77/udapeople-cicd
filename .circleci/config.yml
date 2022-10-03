@@ -212,7 +212,7 @@ jobs:
              --output text)
              echo $BACKEND_PUBLIC_IP >> inventory.txt
              cat inventory.txt
-            #  echo ${BACKEND_PUBLIC_IP}   
+             #  echo ${BACKEND_PUBLIC_IP}   
       - persist_to_workspace:
           root: ~/
           paths:
@@ -246,11 +246,12 @@ jobs:
 
   run-migrations:
     docker: 
-      - image: circleci/node:13.8.0  # Docker image here that supports NodeJS
+      - image: cimg/python:3.10
+      # Docker image here that supports NodeJS
     steps:
     - checkout
     - install_awscli
-    # - install_nodejs
+    - install_nodejs
     - restore_cache:
        keys: [backend-build]
     - run: 
@@ -436,7 +437,7 @@ workflows:
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
-          requires: [configure-infrastructure]
+           requires: [configure-infrastructure]
       # - deploy-frontend:
       #      requires: [run-migrations]
       # - deploy-backend:
