@@ -314,7 +314,6 @@ jobs:
             sudo npm install -g npm@latest
             rm -rf node_modules
             npm install
-            npm webpack-dev-server
             npm run build:prod
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
@@ -337,17 +336,30 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-           cd backend
-           npm i
-           npm run build
-           cd ..
-           cd .circleci/ansible
-           mkdir files
-           cd files
-           tar -C ../../../backend -czvf artifact.tar.gz .
-           cd ../                   
-           cat inventory.txt
-           ansible-playbook -i inventory.txt deploy-backend.yml      
+            cd backend
+            npm install
+            cd backend
+            npm run build
+            tar -czf artifact.tar.gz dist/* package*
+            cd ..
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files            
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            cd .circleci/ansible
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+          #  cd backend
+          #  npm i
+          #  npm run build
+          #  cd ..
+          #  cd .circleci/ansible
+          #  mkdir files
+          #  cd files
+          #  tar -C ../../../backend -czvf artifact.tar.gz .
+          #  cd ../                   
+          #  cat inventory.txt
+          #  ansible-playbook -i inventory.txt deploy-backend.yml      
       
       - destroy-environment
       - revert-migrations
