@@ -314,8 +314,8 @@ jobs:
             sudo npm install -g npm@latest
             rm -rf node_modules
             npm install
+            npm webpack-dev-server
             npm run build:prod
-            npm run hot-dev-server
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
       - revert-migrations
@@ -340,7 +340,6 @@ jobs:
            cd backend
            npm i
            npm run build
-           npm run hot-dev-server
            cd ..
            cd .circleci/ansible
            mkdir files
