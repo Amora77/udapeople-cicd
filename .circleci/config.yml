@@ -338,6 +338,7 @@ jobs:
            npm i
            npm run build
            cd ..
+           ls -l
            cd .circleci/ansible
            mkdir files
            cd files
@@ -345,7 +346,8 @@ jobs:
            export TYPEORM_MIGRATIONS_DIR=./migrations
            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
            export TYPEORM_MIGRATIONS=./migrations/*.ts
-           cd ../                   
+           cd ../
+           ls -l                   
            cat inventory.txt
            ansible-playbook -i inventory.txt deploy-backend.yml      
       
