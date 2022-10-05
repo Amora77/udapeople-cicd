@@ -1,3 +1,18 @@
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
+
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
 - name: Create Backend Directory
   file:
     path: ~/backend-app
@@ -30,15 +45,17 @@
     sudo su -c "env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu"
     pm2 save
 
-- name: Start the app
-  shell: |
-    export TYPEORM_ENTITIES=./backend/dist/modules/domain/**/*.entity{.ts,.js}
-    export TYPEORM_HOST=udapeople-db.c14rdikvngy9.us-west-2.rds.amazonaws.com
-    export TYPEORM_PORT=5432
-    export TYPEORM_USERNAME=postgres
-    export TYPEORM_PASSWORD=postgres
-    export TYPEORM_DATABASE=postgres
-    export TYPEORM_MIGRATIONS_DIR=./backend/dist/migrations
-    export TYPEORM_MIGRATIONS=./backend/dist/migrations/*.ts
-    pm2 stop default
-    pm2 start -f /home/ubuntu/backend/dist/main.js
+
+
+# - name: Start the app
+#   shell: |
+#     export TYPEORM_ENTITIES=./backend/dist/modules/domain/**/*.entity{.ts,.js}
+#     export TYPEORM_HOST=udapeople-db.c14rdikvngy9.us-west-2.rds.amazonaws.com
+#     export TYPEORM_PORT=5432
+#     export TYPEORM_USERNAME=postgres
+#     export TYPEORM_PASSWORD=postgres
+#     export TYPEORM_DATABASE=postgres
+#     export TYPEORM_MIGRATIONS_DIR=./backend/dist/migrations
+#     export TYPEORM_MIGRATIONS=./backend/dist/migrations/*.ts
+#     pm2 stop default
+#     pm2 start -f /home/ubuntu/backend/dist/main.js
