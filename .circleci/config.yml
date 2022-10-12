@@ -10,7 +10,6 @@ commands:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install
-
   install_ansible:
    description: Install Ansible
    steps:
@@ -47,8 +46,6 @@ commands:
             # Install Node.js LTS version as our base Node.js version
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt install -y nodejs
-
-
   revert-migrations:
     description: Revert the last migration, if any were executed during the current workflow
     parameters:
@@ -68,9 +65,8 @@ commands:
                npm install
                npm run migration:revert
              fi
-
 jobs:
-  
+
   notify:
     docker:
       - image: "cimg/base:stable"
@@ -140,7 +136,6 @@ jobs:
            cd frontend
            npm install
            npm test
-
   test-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -172,7 +167,6 @@ jobs:
            npm install
            npm audit fix --force --audit-level=critical
            npm audit --audit-level=critical
-
   scan-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -190,7 +184,6 @@ jobs:
            npm audit fix --force --audit-level=critical
            npm audit fix --force --audit-level=critical
            npm audit --audit-level=critical
-
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -255,6 +248,7 @@ jobs:
          command: |
           cd .circleci/ansible
           cat inventory.txt
+          aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> inventory.txt
           ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
@@ -336,7 +330,7 @@ jobs:
 
 
   deploy-backend:
-        docker:
+    docker:
        - image: cimg/base:stable
       # Docker image here that supports Ansible
     steps:
@@ -366,10 +360,25 @@ jobs:
            cd ../
            ls -l                   
            cat inventory.txt
-           ansible-playbook -i inventory.txt deploy-backend.yml 
+           ansible-playbook -i inventory.txt deploy-backend.yml      
+      
+      - destroy-environment
+      - revert-migrations
+          #  cd backend
+          #  npm i
+          #  npm run build
+          #  cd ..
+          #  cd .circleci/ansible
+          #  mkdir files
+          #  cd files
+          #  tar -C ../../../backend -czvf artifact.tar.gz .
+          #  cd ../                   
+          #  cat inventory.txt
+          #  ansible-playbook -i inventory.txt deploy-backend.yml      
+      # Here's where you will add some code to rollback on failure  
 
   smoke-test:
-   docker:
+    docker:
       - image: cimg/base:stable
     steps:
       - checkout
@@ -425,7 +434,6 @@ jobs:
               --template-file .circleci/files/cloudfront.yml \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --stack-name udapeople-cloudfront
-
   cleanup:
     docker:
       - image: amazon/aws-cli
@@ -457,7 +465,6 @@ jobs:
               aws cloudformation delete-stack --stack-name "frontend-${OldWorkflowID}"
             fi
             
-
 workflows:
   default:
     jobs:
@@ -477,7 +484,7 @@ workflows:
             branches:
               only: [master]
       - configure-infrastructure:
-           requires: [deploy-infrastructure]
+          requires: [deploy-infrastructure]
       - run-migrations:
            requires: [configure-infrastructure]
       - deploy-frontend:
@@ -485,8 +492,8 @@ workflows:
       - deploy-backend:
            requires: [run-migrations]
       - smoke-test:
-            requires: [deploy-backend, deploy-frontend]
+           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
            requires: [smoke-test]
       - cleanup:
-           requires: [cloudfront-update]
+         requires: [cloudfront-update]
