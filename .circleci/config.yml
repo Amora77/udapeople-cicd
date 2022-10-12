@@ -1,7 +1,6 @@
 version: 2.1
 
 commands:
-
   install_awscli:
     description: Install AWS CLI v2
     steps:
@@ -69,6 +68,29 @@ commands:
                npm install
                npm run migration:revert
              fi
+
+jobs:
+  notify:
+    docker:
+      - image: "cimg/base:stable"
+    steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
 
   build-frontend:
     docker:
@@ -213,7 +235,7 @@ commands:
           paths:
           - project/.circleci/ansible/inventory.txt
       
-      # Here's where you will add some code to rollback on failure      sssww
+      # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
     docker: 
