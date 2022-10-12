@@ -339,7 +339,7 @@ jobs:
 
 
   deploy-backend:
-    docker:
+        docker:
        - image: cimg/base:stable
       # Docker image here that supports Ansible
     steps:
@@ -369,13 +369,10 @@ jobs:
            cd ../
            ls -l                   
            cat inventory.txt
-           ansible-playbook -i inventory.txt deploy-backend.yml      
-      
-      - destroy-environment
-      - revert-migrations
+           ansible-playbook -i inventory.txt deploy-backend.yml 
 
   smoke-test:
-    docker:
+   docker:
       - image: cimg/base:stable
     steps:
       - checkout
@@ -388,10 +385,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udapeople" --output text)
-            echo ${BACKEND_PUBLIC_IP}
+            export BACKEND_PUBLIC_IP=$(aws ec2 describe-instances --region us-west-2 --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
             export "API_URL=http://${BACKEND_PUBLIC_IP}:3030"
             echo "API_URL = ${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
